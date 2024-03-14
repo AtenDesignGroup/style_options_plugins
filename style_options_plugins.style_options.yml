@@ -1,0 +1,49 @@
+options:
+  align:
+    plugin: css_class
+    label: Align
+    default: none
+    options:
+      none:
+        label: None
+        image: /modules/contrib/style_options_plugins/images/icons/align-none.svg
+      left:
+        label: Left
+        class: u-align-left
+        image: /modules/contrib/style_options_plugins/images/icons/align-left.svg
+      center:
+        label: Center
+        class: u-align-center
+        image: /modules/contrib/style_options_plugins/images/icons/align-center.svg
+      right:
+        label: Right
+        class: u-align-right
+        image: /modules/contrib/style_options_plugins/images/icons/align-right.svg
+
+  custom_class:
+    plugin: css_class
+    label: Custom Class
+    description: Enter a space separated list of classes to add to this element
+
+contexts:
+  paragraphs:
+    _default:
+      options:
+        custom_class: true
+    stories_image:
+      options:
+        align: true
+        custom_class: true
+    stories_slideshow:
+      options:
+        align: true
+    stories_web_video:
+      options:
+        align: true
+
+  layout:
+    _default:
+      options:
+        custom_class:
+          layout: true
+          regions: true

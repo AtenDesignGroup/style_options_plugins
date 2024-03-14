@@ -1,0 +1,9 @@
+style_options:
+  css:
+    theme:
+      build/css/style-options.css: {}
+  js:
+    build/js/style-options.js: {}
+  dependencies:
+    - core/once
+    - core/jquery

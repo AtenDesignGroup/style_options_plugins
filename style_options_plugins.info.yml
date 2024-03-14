@@ -1,0 +1,7 @@
+name: Style Options Plugins
+description: 'Provides a set of plugins for the Style Options module.'
+type: module
+package: 'Style Options'
+core_version_requirement: ^10
+dependencies:
+  - style_options

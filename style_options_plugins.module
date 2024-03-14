@@ -1,0 +1,116 @@
+<?php
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\paragraphs\ParagraphInterface;
+
+/**
+ * @file
+ * Legacy ME Style Options module.
+ */
+
+/**
+ * Implements hook_preprocess_layout_paragraphs_component_menu().
+ */
+function style_options_plugins_preprocess_layout_paragraphs_builder_component_menu(&$variables) {
+  foreach (['layout', 'content'] as $category) {
+    if (isset($variables['types'][$category])) {
+      $new_types = [];
+      foreach ($variables['types'][$category] as $bundle => $info) {
+        $new_types[$bundle] = $info;
+        $options = \Drupal::service('style_options.discovery')->getContextOptions('paragraphs', $bundle);
+        foreach (array_keys($options) as $option_id) {
+          $definition =  \Drupal::service('style_options.discovery')->getOptionDefinition($option_id);
+          if ($definition['plugin'] == 'template_suggestion') {
+            foreach ($definition['options'] as $key => $option) {
+              if ($key !== $definition['default']) {
+                $new_types[$bundle . '__' . $key] = $info;
+                $new_types[$bundle . '__' . $key]['id'] = $bundle . '__' . $key;
+                $new_types[$bundle . '__' . $key]['label'] = $option['label'];
+                $new_types[$bundle . '__' . $key]['url'] .= (strpos($info['url'], '?') !== FALSE ? '&' : '?') . $option_id . '=' . $key;
+                $new_types[$bundle . '__' . $key]['link_attributes'] = clone($info['link_attributes']);
+                $new_types[$bundle . '__' . $key]['link_attributes']->setAttribute('title', t('Create new :type', [':type' => $option['label']]));
+              }
+            }
+          }
+        }
+      }
+      $variables['types'][$category] = $new_types;
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_layout_paragraphs_builder_controls().
+ *
+ * Change the component name in the controls widget to the template suggestion.
+ */
+function style_options_plugins_preprocess_layout_paragraphs_builder_controls(&$variables) {
+
+  /** @var \Drupal\layout_paragraphs\LayoutParagraphsLayout $layout */
+  $layout = $variables['layout_paragraphs_layout'];
+  $component = $layout->getComponentByUuid($variables['uuid']);
+  $paragraph = $component->getEntity();
+  $context_options = \Drupal::service('style_options.discovery')
+    ->getContextOptions('paragraphs', $paragraph->bundle());
+  foreach (array_keys($context_options) as $option) {
+    $context_defition = \Drupal::service('style_options.discovery')
+      ->getOptionDefinition($option);
+    if ($context_defition['plugin'] == 'template_suggestion') {
+      $behavior_settings = $paragraph->getAllBehaviorSettings();
+      $style_options = $behavior_settings['style_options'];
+      if (isset($style_options[$option])) {
+        $key = $style_options[$option]['template_suggestion'];
+        $variables['controls']['label']['#value'] = $context_defition['options'][$key]['label'];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter
+ */
+function style_options_plugins_theme_suggestions_paragraph_alter(array &$suggestions, array $variables) {
+  /** @var Drupal\paragraphs\Entity\Paragraph $paragraph */
+  $paragraph = $variables['elements']['#paragraph'];
+  if (empty($paragraph)) {
+    return;
+  }
+  $behavior_settings = $paragraph->getAllBehaviorSettings();
+  if (isset($behavior_settings['style_options'])) {
+    $template_suggestions = array_filter($behavior_settings['style_options'], function ($option) {
+      return isset($option['template_suggestion']);
+    });
+    $template_suggestions = array_map(function ($option) {
+      return $option['template_suggestion'];
+    }, $template_suggestions);
+    foreach ($template_suggestions as $template_suggestion) {
+      $suggestions[] = 'paragraph__' . $paragraph->bundle() . '__' . $template_suggestion;
+    }
+    return $suggestions;
+  }
+}
+
+/**
+ * Implements hook_entity_view_mode_alter().
+ */
+function style_options_plugins_entity_view_mode_alter(&$view_mode, EntityInterface $entity, $context) {
+  if (!$entity instanceof ParagraphInterface) {
+    return;
+  }
+  $behavior_settings = $entity->getAllBehaviorSettings();
+  $style_options = $behavior_settings['style_options'] ?? [];
+  foreach ($style_options as $option_id => $style_option) {
+    if (isset($style_option['display_mode'])) {
+      $definition =  \Drupal::service('style_options.discovery')->getOptionDefinition($option_id);
+      $config = $definition['options'][$style_option['display_mode']];
+      $view_mode = $config['view_mode'];
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
+ */
+function style_options_plugins_preprocess_paragraph(&$variables) {
+  $variables['#attached']['library'][] = 'style_options_plugins/style_options';
+}
