@@ -1,0 +1,7 @@
+services:
+  style_options_plugins_component_menu_subscriber:
+    class: \Drupal\style_options_plugins\EventSubscriber\ComponentMenuVariationsSubscriber
+    tags:
+      - { name: 'event_subscriber' }
+    arguments:
+      - '@style_options.discovery'

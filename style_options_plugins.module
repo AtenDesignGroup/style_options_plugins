@@ -5,39 +5,8 @@ use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * @file
- * Legacy ME Style Options module.
+ * Style Options Plugins module.
  */
-
-/**
- * Implements hook_preprocess_layout_paragraphs_component_menu().
- */
-function style_options_plugins_preprocess_layout_paragraphs_builder_component_menu(&$variables) {
-  foreach (['layout', 'content'] as $category) {
-    if (isset($variables['types'][$category])) {
-      $new_types = [];
-      foreach ($variables['types'][$category] as $bundle => $info) {
-        $new_types[$bundle] = $info;
-        $options = \Drupal::service('style_options.discovery')->getContextOptions('paragraphs', $bundle);
-        foreach (array_keys($options) as $option_id) {
-          $definition =  \Drupal::service('style_options.discovery')->getOptionDefinition($option_id);
-          if ($definition['plugin'] == 'template_suggestion') {
-            foreach ($definition['options'] as $key => $option) {
-              if ($key !== $definition['default']) {
-                $new_types[$bundle . '__' . $key] = $info;
-                $new_types[$bundle . '__' . $key]['id'] = $bundle . '__' . $key;
-                $new_types[$bundle . '__' . $key]['label'] = $option['label'];
-                $new_types[$bundle . '__' . $key]['url'] .= (strpos($info['url'], '?') !== FALSE ? '&' : '?') . $option_id . '=' . $key;
-                $new_types[$bundle . '__' . $key]['link_attributes'] = clone($info['link_attributes']);
-                $new_types[$bundle . '__' . $key]['link_attributes']->setAttribute('title', t('Create new :type', [':type' => $option['label']]));
-              }
-            }
-          }
-        }
-      }
-      $variables['types'][$category] = $new_types;
-    }
-  }
-}
 
 /**
  * Implements hook_preprocess_layout_paragraphs_builder_controls().
@@ -98,18 +67,21 @@ function style_options_plugins_entity_form_mode_alter(&$form_mode, EntityInterfa
   if (!$entity instanceof ParagraphInterface) {
     return;
   }
-  $behavior_settings = $entity->getAllBehaviorSettings();
-  $style_options = $behavior_settings['style_options'] ?? [];
-  foreach ($style_options as $option_id => $style_option) {
-    if (isset($style_option['display_mode'])) {
-      $definition =  \Drupal::service('style_options.discovery')->getOptionDefinition($option_id);
-      $config = $definition['options'][$style_option['display_mode']];
-      $form_mode = $config['form_mode'];
-    }
-    if (isset($style_option['component_variation'])) {
-      $definition =  \Drupal::service('style_options.discovery')->getOptionDefinition($option_id);
-      $config = $definition['options'][$style_option['component_variation']];
-      $form_mode = $config['view_mode'] ?? 'default';
+  $entity_style_options = $entity->getAllBehaviorSettings()['style_options'] ?? [];
+  $style_options_discovery = \Drupal::service('style_options.discovery');
+  $options = $style_options_discovery->getContextOptions('paragraphs', $entity->bundle());
+  foreach (array_keys($options) as $option_id) {
+    $definition = $style_options_discovery->getOptionDefinition($option_id);
+    if ($definition['plugin'] == 'component_variation') {
+      $request = \Drupal::request();
+      if ($request->query->has($option_id)) {
+        $form_mode = $definition['options'][$request->query->get($option_id)]['form_mode'];
+        return;
+      }
+      if ($entity_style_options[$option_id]['component_variation']) {
+        $form_mode = $definition['options'][$entity_style_options[$option_id]['component_variation']]['form_mode'];
+        return;
+      }
     }
   }
 }
@@ -142,4 +114,14 @@ function style_options_plugins_entity_view_mode_alter(&$view_mode, EntityInterfa
  */
 function style_options_plugins_preprocess_paragraph(&$variables) {
   $variables['#attached']['library'][] = 'style_options_plugins/style_options';
+}
+function style_options_plugins_install() {
+  $module_handler = \Drupal::service('module_handler');
+  $modules = $module_handler->getModuleList();
+  foreach (array_keys($modules) as $weight => $module_name) {
+    if ($module_name == 'mercury_editor') {
+      continue;
+    }
+  }
+  module_set_weight('style_options_plugins', 0);
 }
