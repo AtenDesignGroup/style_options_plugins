@@ -62,7 +62,7 @@ class ComponentVariation extends StyleOptionPluginBase {
       $form['component_variation']['#options'] = $options;
 
     }
-    $submit_name = implode('-', array_merge($form['#parents'], ['submit']));
+    $submit_name = $this->getConfiguration()['option_id'] . '-' . $this->getConfiguration()['plugin'] . '-submit';
     $form['component_variation']['#ajax'] = [
       'wrapper' => $form_state->getCompleteForm()['#id'],
       'trigger_as' => ['name' => $submit_name],
