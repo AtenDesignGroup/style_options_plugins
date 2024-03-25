@@ -141,8 +141,6 @@ class Background extends StyleOptionPluginBase {
         'fixed' => $this->t('Fixed'),
       ],
       '#default_value' => $this->getValue('bg_image')['background_attachment'] ?? 'not_fixed',
-      '#prefix' => '<hr />',
-      '#suffix' => '<hr />',
     ];
     $form['bg_image']['background_size'] = [
       '#type' => 'radios',
@@ -153,7 +151,6 @@ class Background extends StyleOptionPluginBase {
         'auto' => $this->t('Auto'),
       ],
       '#default_value' => $this->getValue('bg_image')['background_size'] ?? 'cover',
-      '#suffix' => '<hr />',
     ];
     $form['#attached']['library'][] = 'style_options_plugins/background';
     return $form;

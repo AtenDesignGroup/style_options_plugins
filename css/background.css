@@ -1,21 +1,18 @@
 :root {
   --so-bg-pos-toggle-size: 15px;
-  --so-box_input_hover_border: #ccc;
-  --so-panel_link_color: #0073aa;
-  --so-box_input_bg: #fff;
-  --so-panel_bg_color: #0073aa;
-  --so-box_input_bg_checked: #0073aa;
-  --so-panel_text_color: #fff;
+  --so-bg-pos-border-color: #333;
+  --so-bg-pos-bg-color: #0073aa;
+  --so-bg-pos-bg-color--selected: #0073aa50;
+  --so-bg-pos-bg-color--hover: #fff;
 }
 
-.so-bg-image__wrapper .fieldset__wrapper {
+.so-bg-image__wrapper > .fieldset__wrapper {
   display: flex;
   & > * {
-    margin: 0 0 0 1em;
+    margin: 0 0 0 3em;
     &:first-child {
       margin-left: 0;
     }
-    flex: 1 1 0px;
   }
   & .fieldset__legend {
     font-weight: normal;
@@ -48,18 +45,15 @@
 .so-bg-image__position {
 
   & .form-radios {
-    border: 1px solid var(--so-box_input_hover_border);
-    height: 70px;
+    width: 100px;
+    outline: 1px dotted var(--so-bg-pos-border-color);
     position: relative;
     display: flex;
-    width: 100%;
-    max-width: 50%;
-    margin-top: 4px;
-
+    margin: 1em .5em .5em .5em;
+    aspect-ratio: 1;
     & > div {
       margin: 0;
     }
-
     & input {
       /* Hide the radio buttons */
       position: absolute;
@@ -71,19 +65,10 @@
       clip: rect(0,0,0,0);
       border: 0;
 
-      &:checked + label,
-      &:checked + label:hover {
-        background-color: var(--so-panel_link_color);
-        border: 1px solid var(--so-box_input_bg);
-        box-shadow: inset 0 0 0 2px var(--so-panel_bg_color);
-        transform: scale(1.2);
-      }
-
-      &~ label {
+      & ~ label {
         position: absolute;
-        background-color: var(--so-box_input_bg_checked);
-        border: 2px solid var(--so-panel_bg_color);
-        border-radius: 50%;
+        background-color: var(--so-bg-pos-bg-color);
+        outline: 2px solid var(--so-bg-pos-bg-color);
         width: var(--so-bg-pos-toggle-size);
         height: var(--so-bg-pos-toggle-size);
         font-size: 0;
@@ -94,9 +79,14 @@
         transition-duration: 0.5s;
 
         &:hover {
-          background-color: var(--so-panel_text_color);
+          background-color: var(--so-bg-pos-bg-color--hover);
           animation: hover-pop 0.3s linear 1;
         }
+      }
+
+      &:checked + label,
+      &:checked + label:hover {
+        background-color: var(--so-bg-pos-bg-color--selected);
       }
 
       /* Left side */
