@@ -164,6 +164,7 @@ class Background extends StyleOptionPluginBase {
    */
   public function build(array $build, $value = '') {
 
+    $style_variables = [];
     $media_id = $this->getValue('bg_image')['media'] ?? NULL;
     if (!empty($media_id)) {
       $media_entity = Media::load($media_id);
@@ -179,12 +180,15 @@ class Background extends StyleOptionPluginBase {
 
       $file_uri = $file_object->getFileUri();
       $file_url = $this->fileUrlGenerator->generate($file_uri)->toString();
-
       if ($this->getConfiguration('method') == 'css') {
-        $this->generateStyle($build, [
+        $style_variables += [
           '#file_url' => $file_url,
           '#image' => $file_object,
-        ]);
+          '#repeat' => $this->getValue('bg_image')['background_repeat'] ?? 'no-repeat',
+          '#position' => $this->getValue('bg_image')['background_position'] ?? 'center',
+          '#attachment' => $this->getValue('bg_image')['background_attachment'] ?? 'not-fixed',
+          '#size' => $this->getValue('bg_image')['background_size'] ?? 'cover',
+        ];
       }
       else {
         $build['#attributes']['style'][] = 'background-image: url(' . $file_url . ');';
@@ -194,11 +198,14 @@ class Background extends StyleOptionPluginBase {
     $bg_color = $this->getValue('bg_color') ?? NULL;
     if (!empty($bg_color)) {
       if ($this->getConfiguration('method') == 'css') {
-        $this->generateStyle($build, ['#color' => $bg_color]);
+        $style_variables += ['#color' => $bg_color];
       }
       else {
         $build['#attributes']['style'][] = "background-color: $bg_color;";
       }
+    }
+    if ($this->getConfiguration('method') == 'css') {
+      $this->generateStyle($build, $style_variables);
     }
     return $build;
   }

@@ -8,6 +8,26 @@ use Drupal\paragraphs\ParagraphInterface;
  * Style Options Plugins module.
  */
 
+ /**
+  * Implements hook_theme().
+  */
+function style_options_plugins_theme() {
+  return [
+    'style_options_plugins_background' => [
+      'variables' => [
+        'css_class' => NULL,
+        'color' => NULL,
+        'file_url' => NULL,
+        'image' => NULL,
+        'repeat' => NULL,
+        'position' => NULL,
+        'size' => NULL,
+        'attachement' => NULL,
+      ],
+    ],
+  ];
+}
+
 /**
  * Implements hook_preprocess_layout_paragraphs_builder_controls().
  *
