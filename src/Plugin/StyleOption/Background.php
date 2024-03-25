@@ -3,6 +3,7 @@
 namespace Drupal\style_options_plugins\Plugin\StyleOption;
 
 use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
 use Drupal\Core\Render\Renderer;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
@@ -84,7 +85,7 @@ class Background extends StyleOptionPluginBase {
         '#type' => 'media_library',
         '#title' => $this->t('Media'),
         '#description' => $this->t('Media'),
-        '#allowed_bundles' => [$this->getConfiguration('background_image')['background_image_bundle'] ?? 'image'],
+        '#allowed_bundles' => [$this->getConfiguration('background_image')['bundle'] ?? 'image'],
         '#default_value' => $this->getValue('bg_image')['media'] ?? $this->getDefaultValue(),
       ];
     }
@@ -162,7 +163,18 @@ class Background extends StyleOptionPluginBase {
    * {@inheritDoc}
    */
   public function build(array $build, $value = '') {
-    $fid = $this->getValue('fid');
+
+    $media_id = $this->getValue('bg_image')['media'] ?? NULL;
+    if (!empty($media_id)) {
+      $media_entity = Media::load($media_id);
+      if (!empty($media_entity)) {
+        $field_name = $this->getConfiguration('background_image')['field'] ?? 'field_media_image';
+        $fid = $media_entity->$field_name->target_id;
+      }
+    }
+    else {
+      $fid = $this->getValue('bg_image')['fid'] ?? NULL;
+    }
     if (!empty($fid) && $file_object = File::load($fid[0])) {
 
       $file_uri = $file_object->getFileUri();
@@ -176,6 +188,16 @@ class Background extends StyleOptionPluginBase {
       }
       else {
         $build['#attributes']['style'][] = 'background-image: url(' . $file_url . ');';
+      }
+    }
+
+    $bg_color = $this->getValue('bg_color') ?? NULL;
+    if (!empty($bg_color)) {
+      if ($this->getConfiguration('method') == 'css') {
+        $this->generateStyle($build, ['#color' => $bg_color]);
+      }
+      else {
+        $build['#attributes']['style'][] = "background-color: $bg_color;";
       }
     }
     return $build;
