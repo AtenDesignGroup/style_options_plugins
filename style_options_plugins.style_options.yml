@@ -19,6 +19,61 @@ options:
         label: Right
         class: u-align-right
         image: /modules/contrib/style_options_plugins/images/icons/align-right.svg
+  boxsize:
+    plugin: boxsizing
+    label: Box Size
+    default:
+      margin:
+        top: 'default'
+        right: 'default'
+        bottom: 'default'
+        left: 'default'
+      padding:
+        top: 'default'
+        right: 'default'
+        bottom: 'default'
+        left: 'default'
+    options:
+      margin:
+        'default':
+          label: 'Default'
+        'auto':
+          label: 'Auto'
+        '+0':
+          label: '0'
+        '+10':
+          label: '10'
+        '+20':
+          label: '20'
+        '+36':
+          label: '36'
+        '+60':
+          label: '60'
+        '+92':
+          label: '92'
+        '+120':
+          label: '120'
+        '+180':
+          label: '180'
+      padding:
+        'default':
+          label: 'Default'
+        '+0':
+          label: '0'
+        '+10':
+          label: '10'
+        '+20':
+          label: '20'
+        '+36':
+          label: '36'
+        '+60':
+          label: '60'
+        '+92':
+          label: '92'
+        '+120':
+          label: '120'
+        '+180':
+          label: '180'
 
   custom_class:
     plugin: css_class
@@ -45,5 +100,8 @@ contexts:
     _default:
       options:
         custom_class:
+          layout: true
+          regions: true
+        boxsize:
           layout: true
           regions: true
