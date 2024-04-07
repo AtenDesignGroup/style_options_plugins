@@ -5,3 +5,9 @@ services:
       - { name: 'event_subscriber' }
     arguments:
       - '@style_options.discovery'
+  style_options_plugins_before_create_component_subscriber:
+    class: \Drupal\style_options_plugins\EventSubscriber\BeforeCreateComponentSubscriber
+    tags:
+      - { name: 'event_subscriber' }
+    arguments:
+      - '@style_options.discovery'
