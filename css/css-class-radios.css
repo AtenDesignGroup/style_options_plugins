@@ -1,0 +1,33 @@
+.classy-radios {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.classy-radios__item {
+  flex: 0 1 150px;
+  margin-right: 10px;
+}
+
+.so--css-class-radios{
+  &.hide-radios {
+    & .form-item {
+      margin-left: 0;
+      margin-right: 5px;
+    }
+    & .form-item label.option {
+      display: flex;
+      padding: 10px;
+    }
+    & .form-item input:checked + label {
+      outline: 2px solid blue;
+      transition: .1s all;
+      font-weight: bold;
+    }
+  }
+  &.hide-labels label {
+    text-indent: -99999px;
+    min-width: 30px;
+    min-height: 30px;
+  }
+}
+

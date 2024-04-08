@@ -2,3 +2,8 @@ background:
   css:
     theme:
       css/background.css: {}
+
+css_class_radios:
+  css:
+    component:
+      css/css-class-radios.css: {}

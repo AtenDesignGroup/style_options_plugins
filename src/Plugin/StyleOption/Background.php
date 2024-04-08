@@ -63,15 +63,6 @@ class Background extends StyleOptionPluginBase {
    * {@inheritDoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
-    $form['bg_color'] = [
-      '#type' => 'color_spectrum',
-      '#title' => $this->t('Background Color'),
-      '#default_value' => $this->getValue('bg_color') ?? $this->getDefaultValue(),
-      '#settings' => $this->getConfiguration('background_color')['settings'] ?? [],
-      '#wrapper_attributes' => [
-        'class' => [$this->getConfiguration('css_class')],
-      ],
-    ];
     $form['bg_image'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Background Image'),
@@ -86,7 +77,7 @@ class Background extends StyleOptionPluginBase {
         '#title' => $this->t('Media'),
         '#description' => $this->t('Media'),
         '#allowed_bundles' => [$this->getConfiguration('background_image')['bundle'] ?? 'image'],
-        '#default_value' => $this->getValue('bg_image')['media'] ?? $this->getDefaultValue(),
+        '#default_value' => $this->getValue('bg_image')['media'] ?? NULL,
       ];
     }
     else {
@@ -157,13 +148,27 @@ class Background extends StyleOptionPluginBase {
   }
 
   /**
+   * Build a list of background color options for classy radios.
+   */
+  protected function backgroundColorOptions() {
+    $options = $this->getConfiguration('background_color')['options'] ?? [];
+    return array_map(function ($varname, $color) {
+      return [
+        'classes' => 'bg-color' . $varname,
+        'label' => '',
+        'attributes' => ['style' => 'background-color: var(' . $varname . ', ' . $color . ')'],
+      ];
+    }, array_keys($options), $options);
+  }
+
+  /**
    * {@inheritDoc}
    */
   public function build(array $build, $value = '') {
 
     $style_variables = [];
     $media_id = $this->getValue('bg_image')['media'] ?? NULL;
-    if (!empty($media_id)) {
+    if (!empty($media_id) && is_numeric($media_id)) {
       $media_entity = Media::load($media_id);
       if (!empty($media_entity)) {
         $field_name = $this->getConfiguration('background_image')['field'] ?? 'field_media_image';
@@ -205,6 +210,19 @@ class Background extends StyleOptionPluginBase {
       $this->generateStyle($build, $style_variables);
     }
     return $build;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function setValues($values) {
+    $this->values = $values;
+    // Addresses an issue with the way media form elements load default values
+    // when the form is not rendered.
+    // if (isset($values['bg_image']['media']['media_library_selection'])) {
+    //   $this->values['bg_image']['media'] = $values['media']['media_selection_id'];
+    // }
+    return $this;
   }
 
 }
