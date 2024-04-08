@@ -118,13 +118,17 @@ function style_options_plugins_entity_view_mode_alter(&$view_mode, EntityInterfa
   foreach ($style_options as $option_id => $style_option) {
     if (isset($style_option['display_mode'])) {
       $definition =  \Drupal::service('style_options.discovery')->getOptionDefinition($option_id);
-      $config = $definition['options'][$style_option['display_mode']];
-      $view_mode = $config['view_mode'];
+      if (!empty($definition)) {
+        $config = $definition['options'][$style_option['display_mode']];
+        $view_mode = $config['view_mode'];
+      }
     }
     if (isset($style_option['component_variation'])) {
       $definition =  \Drupal::service('style_options.discovery')->getOptionDefinition($option_id);
-      $config = $definition['options'][$style_option['component_variation']];
-      $view_mode = $config['view_mode'] ?? 'default';
+      if (!empty($definition)) {
+        $config = $definition['options'][$style_option['component_variation']];
+        $view_mode = $config['view_mode'] ?? 'default';
+      }
     }
   }
 }

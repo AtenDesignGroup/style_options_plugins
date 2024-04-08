@@ -9,10 +9,12 @@
 }
 
 .so--css-class-radios{
+  .form-item {
+    margin-right: 5px;
+  }
   &.hide-radios {
     & .form-item {
       margin-left: 0;
-      margin-right: 5px;
     }
     & .form-item label.option {
       display: flex;
