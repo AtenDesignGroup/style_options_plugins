@@ -2,7 +2,6 @@
 
 namespace Drupal\style_options_plugins\Plugin\StyleOption;
 
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Security\TrustedCallbackInterface;
