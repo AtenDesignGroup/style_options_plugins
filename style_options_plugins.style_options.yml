@@ -19,6 +19,63 @@ options:
         label: Right
         class: u-align-right
         image: /modules/contrib/style_options_plugins/images/icons/align-right.svg
+  boxsize:
+    plugin: boxsize
+    label: Box Size
+    default:
+      margin:
+        top: 'default'
+        right: 'default'
+        bottom: 'default'
+        left: 'default'
+      padding:
+        top: 'default'
+        right: 'default'
+        bottom: 'default'
+        left: 'default'
+    options:
+      margin:
+        'default':
+          label: 'Default'
+        'auto':
+          label: 'Auto'
+        # '0' is an invalid associative array key, so we use '00' instead.
+        '00':
+          label: '0'
+        '10':
+          label: '10px'
+        '20':
+          label: '20px'
+        '36':
+          label: '36px'
+        '60':
+          label: '60px'
+        '96':
+          label: '96px'
+        '120':
+          label: '120px'
+        '180':
+          label: '180px'
+      padding:
+        'default':
+          label: 'Default'
+        # '0' is an invalid associative array key, so we use '00' instead.
+        '00':
+          label: '0'
+        '10':
+          label: '10px'
+        '20':
+          label: '20px'
+        '36':
+          label: '36px'
+        '60':
+          label: '60px'
+        '96':
+          label: '96px'
+        '120':
+          label: '120px'
+        '180':
+          label: '180px'
 
   custom_class:
     plugin: css_class
@@ -45,5 +102,8 @@ contexts:
     _default:
       options:
         custom_class:
+          layout: true
+          regions: true
+        boxsize:
           layout: true
           regions: true

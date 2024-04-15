@@ -7,3 +7,12 @@ css_class_radios:
   css:
     component:
       css/css-class-radios.css: {}
+
+boxsize:
+  css:
+    theme:
+      css/boxsize.css: {}
+  js:
+    js/boxsize.js: {}
+  dependencies:
+    - core/once
