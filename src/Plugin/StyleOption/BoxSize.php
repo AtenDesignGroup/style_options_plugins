@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\style_options_plugins\Plugin\StyleOption;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\style_options_plugins\Plugin\StyleOption\Property;
+use Drupal\style_options\Plugin\StyleOption\CssClass;
 
 /**
  * Define the class attribute option plugin.
@@ -15,7 +15,7 @@ use Drupal\style_options_plugins\Plugin\StyleOption\Property;
  *   label = @Translation("Box Sizing"),
  * )
  */
-class BoxSize extends Property {
+class BoxSize extends CssClass {
   /**
    * @var array
    *   The directions that the property can be applied to.
@@ -115,14 +115,6 @@ class BoxSize extends Property {
           ],
         ],
         'x' => [
-          '#states' => [
-            'disabled' => [
-              ':input[name*="[boxsize][' . $property . '][lock][all]"]' => ['checked' => TRUE],
-            ],
-            'checked' => [
-              ':input[name*="[boxsize][' . $property . '][lock][all]"]' => ['checked' => TRUE],
-            ],
-          ],
           '#attributes' => [
             'title' => $this->t('Lock @property along the x axis', [
               '@property' => $property,
@@ -130,14 +122,6 @@ class BoxSize extends Property {
           ],
         ],
         'y' => [
-          '#states' => [
-            'checked' => [
-              ':input[name*="[boxsize][' . $property . '][lock][all]"]' => ['checked' => TRUE],
-            ],
-            'disabled' => [
-              ':input[name*="[boxsize][' . $property . '][lock][all]"]' => ['checked' => TRUE],
-            ],
-          ],
           '#attributes' => [
             'title' => $this->t('Lock @property along the y axis', [
               '@property' => $property,
@@ -169,32 +153,6 @@ class BoxSize extends Property {
           ],
         ];
 
-        switch ($direction) {
-          case 'right':
-            $element['#states'] = [
-              'disabled' => [
-                ':input[name*="[boxsize][' . $property . '][lock][all]"]' => ['checked' => TRUE],
-              ],
-            ];
-            break;
-
-          case 'bottom':
-            $element['#states'] = [
-              'disabled' => [
-                ':input[name*="[boxsize][' . $property . '][lock][y]"]' => ['checked' => TRUE],
-              ],
-            ];
-            break;
-
-          case 'left':
-            $element['#states'] = [
-              'disabled' => [
-                ':input[name*="[boxsize][' . $property . '][lock][x]"]' => ['checked' => TRUE],
-              ],
-            ];
-            break;
-        }
-
         if ($this->hasConfiguration('options')) {
           $element['#type'] = 'select';
           $element['#attributes']['title'] = $this->t('@label @property', [
@@ -214,6 +172,34 @@ class BoxSize extends Property {
     }
 
     return $form;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function submitConfigurationForm(
+    array &$form,
+    FormStateInterface $form_state
+  ): void {
+    $values = $form_state->cleanValues()->getValues();
+
+    // Handle locked values.
+    foreach (['margin', 'padding'] as $property) {
+      $property_values = &$values['boxsize'][$property];
+      if ($property_values['lock']['all']) {
+        $property_values['left']
+          = $property_values['right']
+          = $property_values['bottom']
+          = $property_values['top'];
+      }
+      if ($property_values['lock']['x']) {
+        $property_values['right'] = $property_values['left'];
+      }
+      if ($property_values['lock']['y']) {
+        $property_values['bottom'] = $property_values['top'];
+      }
+    }
+    $this->setValues($values);
   }
 
   /**

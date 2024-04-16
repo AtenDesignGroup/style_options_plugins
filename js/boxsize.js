@@ -31,28 +31,49 @@
    * @returns {void}
    */
   function matchValues(element) {
-    console.log('matchValues');
     const value = {
       'top': element.querySelector('[name*="[top]"]').value,
-      'right': element.querySelector('[name*="[right]"]').value,
+      'left': element.querySelector('[name*="[left]"]').value,
     };
+
+    const elements = {
+      'top': element.querySelector('[name*="[top]"]'),
+      'right': element.querySelector('[name*="[right]"]'),
+      'bottom': element.querySelector('[name*="[bottom]"]'),
+      'left': element.querySelector('[name*="[left]"]'),
+    };
+
+    // Enable all elements.
+    Object.values(elements).forEach((el) => {
+      el.removeAttribute('disabled');
+    });
 
     // The lock state is in the form [x]-[y]-[all].
     switch(element.dataset.axisLock) {
       case '1-1-1':
-        element.querySelector('[name*="[right]"]').value = value.top;
-        element.querySelector('[name*="[bottom]"]').value = value.top;
-        element.querySelector('[name*="[left]"]').value = value.top;
+      case '1-0-1':
+      case '0-0-1':
+      case '0-1-1':
+        elements.right.value = value.top;
+        elements.right.setAttribute('disabled', 'disabled');
+        elements.bottom.value = value.top;
+        elements.bottom.setAttribute('disabled', 'disabled');
+        elements.left.value = value.top;
+        elements.left.setAttribute('disabled', 'disabled');
         break;
       case '0-1-0':
-        element.querySelector('[name*="[bottom]"]').value = value.top;
+        elements.bottom.value = value.top;
+        elements.bottom.setAttribute('disabled', 'disabled');
         break;
       case '1-1-0':
-        element.querySelector('[name*="[bottom]"]').value = value.top;
-        element.querySelector('[name*="[left]"]').value = value.right;
+        elements.right.value = value.left;
+        elements.right.setAttribute('disabled', 'disabled');
+        elements.bottom.value = value.top;
+        elements.bottom.setAttribute('disabled', 'disabled');
         break;
       case '1-0-0':
-        element.querySelector('[name*="[left]"]').value = value.right;
+        elements.right.value = value.left;
+        elements.right.setAttribute('disabled', 'disabled');
         break;
     }
   }
@@ -63,6 +84,7 @@
       elements.forEach(function (element) {
         // Add a lock state to the element via data.
         setLockState(element);
+        matchValues(element)
 
         // Add a change handler to the lock inputs.
         element.querySelectorAll('input[name*="[lock]').forEach(function (input) {
@@ -72,8 +94,8 @@
           });
         });
 
-        // Add a change handler to the top and right inputs.
-        element.querySelectorAll('[name*="[top]"], [name*="[right]"]').forEach(input => {
+        // Add a change handler to the top and left inputs.
+        element.querySelectorAll('[name*="[top]"], [name*="[left]"]').forEach(input => {
           input.addEventListener('change', function (event) {
             matchValues(element)
           });
