@@ -189,8 +189,8 @@ class BoxSize extends CssClass {
       if ($property_values['lock']['all']) {
         $property_values['left']
           = $property_values['right']
-          = $property_values['bottom']
-          = $property_values['top'];
+            = $property_values['bottom']
+              = $property_values['top'];
       }
       if ($property_values['lock']['x']) {
         $property_values['right'] = $property_values['left'];

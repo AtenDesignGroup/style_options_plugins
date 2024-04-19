@@ -23,6 +23,7 @@ function style_options_plugins_theme() {
         'position' => NULL,
         'size' => NULL,
         'attachement' => NULL,
+        'gradient' => NULL,
       ],
     ],
   ];

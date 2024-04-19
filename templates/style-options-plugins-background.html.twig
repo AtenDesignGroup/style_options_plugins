@@ -7,5 +7,8 @@
 		background-size: {{ size }};
 		-webkit-background-size: {{ size }};
     background-attachment: {{ attachment }};
+		{% if gradient %}
+			background-image: {{ gradient }}
+		{% endif %}
 	}
 </style>

@@ -49,13 +49,13 @@ class Background extends StyleOptionPluginBase {
     $plugin_id,
     $plugin_definition) {
     return new static(
-        $configuration,
-        $plugin_id,
-        $plugin_definition,
-        $container->get('renderer'),
-        $container->get('entity_type.manager'),
-        $container->get('file_url_generator'),
-        $container->get('module_handler')
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('renderer'),
+      $container->get('entity_type.manager'),
+      $container->get('file_url_generator'),
+      $container->get('module_handler')
     );
   }
 
@@ -128,10 +128,11 @@ class Background extends StyleOptionPluginBase {
       '#type' => 'radios',
       '#title' => $this->t('Attachment'),
       '#options' => [
-        'not_fixed' => $this->t('Not Fixed'),
+        'scroll' => $this->t('Scroll'),
         'fixed' => $this->t('Fixed'),
+        'local' => $this->t('Local'),
       ],
-      '#default_value' => $this->getValue('bg_image')['background_attachment'] ?? 'not_fixed',
+      '#default_value' => $this->getValue('bg_image')['background_attachment'] ?? 'scroll',
     ];
     $form['bg_image']['background_size'] = [
       '#type' => 'radios',
@@ -143,6 +144,21 @@ class Background extends StyleOptionPluginBase {
       ],
       '#default_value' => $this->getValue('bg_image')['background_size'] ?? 'cover',
     ];
+    $form['bg_gradient'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Background Gradient'),
+      '#collapsible' => TRUE,
+      '#attributes' => [
+        'class' => ['so-bg-gradient__wrapper'],
+      ],
+    ];
+    $form['bg_gradient']['bg_gradient'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Gradient'),
+      '#default_value' => $this->getValue('bg_gradient') ?? $this->getDefaultValue(),
+      '#description' => $this->t('Enter a CSS gradient value.'),
+    ];
+
     $form['#attached']['library'][] = 'style_options_plugins/background';
     return $form;
   }
@@ -172,7 +188,7 @@ class Background extends StyleOptionPluginBase {
       $media_entity = Media::load($media_id);
       if (!empty($media_entity)) {
         $field_name = $this->getConfiguration('background_image')['field'] ?? 'field_media_image';
-        $fid = $media_entity->$field_name->target_id;
+        $fid = [$media_entity->$field_name->target_id];
       }
     }
     else {
@@ -188,7 +204,7 @@ class Background extends StyleOptionPluginBase {
           '#image' => $file_object,
           '#repeat' => $this->getValue('bg_image')['background_repeat'] ?? 'no-repeat',
           '#position' => $this->getValue('bg_image')['background_position'] ?? 'center',
-          '#attachment' => $this->getValue('bg_image')['background_attachment'] ?? 'not-fixed',
+          '#attachment' => $this->getValue('bg_image')['background_attachment'] ?? 'scroll',
           '#size' => $this->getValue('bg_image')['background_size'] ?? 'cover',
         ];
       }
@@ -206,6 +222,17 @@ class Background extends StyleOptionPluginBase {
         $build['#attributes']['style'][] = "background-color: $bg_color;";
       }
     }
+
+    $bg_gradient = $this->getValue('bg_gradient')['bg_gradient'] ?? NULL;
+    if (!empty($bg_gradient)) {
+      if ($this->getConfiguration('method') == 'css') {
+        $style_variables += ['#gradient' => 'linear-gradient(' . $bg_gradient . ')'];
+      }
+      else {
+        $build['#attributes']['style'][] = "background-image: $bg_gradient;";
+      }
+    }
+
     if ($this->getConfiguration('method') == 'css') {
       $this->generateStyle($build, $style_variables);
     }
