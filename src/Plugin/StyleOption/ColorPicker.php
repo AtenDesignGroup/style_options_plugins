@@ -74,6 +74,10 @@ class ColorPicker extends CssClass implements TrustedCallbackInterface {
       'so-color-picker',
       $class_name,
     ];
+    $options = $this->getConfiguration('options') ?? [];
+    foreach (Element::children($element) as $key) {
+      $element[$key]['#label_attributes']['title'] = $options[$key]['label'] ?? '';
+    }
     $element['#attributes']['class'][] = 'hide-radios';
     $element['#attributes']['class'][] = 'hide-labels';
     $element['#attached']['library'][] = 'style_options_plugins/color_picker';
