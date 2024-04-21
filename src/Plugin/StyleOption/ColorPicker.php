@@ -24,12 +24,15 @@ class ColorPicker extends CssClass implements TrustedCallbackInterface {
     array $form,
     FormStateInterface $form_state): array {
 
+    $plugin_id = $this->getPluginId();
     $form = parent::buildConfigurationForm($form, $form_state);
     $options = $this->getConfiguration('options') ?? [];
     $styles = '';
     foreach ($options as $key => $option) {
-      $var = $option['css_var'];
-      $styles .= "\n  .so--color-picker [value=$key]+label { background-color: $var; }";
+      $var = $option['value'] ?? NULL;
+      if ($var) {
+        $styles .= "\n  .so-color-picker [value=$key]+label { background-color: $var; }";
+      }
     }
     if (!empty($styles)) {
       $style_tag = [
@@ -39,16 +42,16 @@ class ColorPicker extends CssClass implements TrustedCallbackInterface {
           'styles' => $styles,
         ],
       ];
-      $form['css_class']['#prefix'] = \Drupal::service('renderer')->render($style_tag);
+      $form[$plugin_id]['#prefix'] = \Drupal::service('renderer')->render($style_tag);
     }
 
-    $form['css_class']['#type'] = 'radios';
-    $form['css_class']['#after_build'] = [
+    $form[$plugin_id]['#type'] = 'radios';
+    $form[$plugin_id]['#after_build'] = [
       [$this, 'afterBuildRadios'],
     ];
     $libary = $this->getConfiguration('library');
     if (!empty($libary)) {
-      $form['css_class']['#attached']['library'][] = $libary;
+      $form[$plugin_id]['#attached']['library'][] = $libary;
     }
     return $form;
   }
@@ -65,19 +68,15 @@ class ColorPicker extends CssClass implements TrustedCallbackInterface {
    *   Returns the radios element with classes added.
    */
   public function afterBuildRadios(array $element, FormStateInterface $form_state) {
-    $classes = $this->getConfiguration('options') ?? [];
-    foreach (Element::children($element) as $key) {
-      $element[$key]['#attributes']['class'][] = 'visually-hidden';
-    }
-    $class_name = 'so--' . str_replace('_', '-', $this->getConfiguration('option_id'));
+    $class_name = 'so-' . str_replace('_', '-', $this->getConfiguration('option_id'));
     $element['#attributes']['class'] = [
       'container-inline',
-      'so--color-picker',
+      'so-color-picker',
       $class_name,
     ];
     $element['#attributes']['class'][] = 'hide-radios';
     $element['#attributes']['class'][] = 'hide-labels';
-    $element['#attached']['library'][] = 'style_options_plugins/css_class_radios';
+    $element['#attached']['library'][] = 'style_options_plugins/color_picker';
     return $element;
   }
 
@@ -88,6 +87,26 @@ class ColorPicker extends CssClass implements TrustedCallbackInterface {
     return [
       'afterBuildRadios',
     ];
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * In addition to adding the specified class to the build array, add the
+   * id, value, and label in case it is needed for theming.
+   */
+  public function build(array $build) {
+    $build = parent::build($build);
+    $plugin_id = $this->getPluginId();
+    $value = $this->getValue($plugin_id) ?? NULL;
+    $option_definition = $this->getConfiguration('options');
+    $options = $option_definition[$value] ?? [];
+    if (!empty($value)) {
+      $build['#' . $this->getOptionId()] = [
+        'id' => $value,
+      ] + $options;
+    }
+    return $build;
   }
 
 }

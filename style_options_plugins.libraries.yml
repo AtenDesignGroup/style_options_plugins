@@ -8,6 +8,12 @@ css_class_radios:
     component:
       css/css-class-radios.css: {}
 
+color_picker:
+  css:
+    component:
+      css/color-picker.css: {}
+
+
 boxsize:
   css:
     theme:

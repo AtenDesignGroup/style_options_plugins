@@ -23,10 +23,10 @@ class CSSClassRadios extends CssClass implements TrustedCallbackInterface {
   public function buildConfigurationForm(
     array $form,
     FormStateInterface $form_state): array {
-
+    $plugin_id = $this->getPluginId();
     $form = parent::buildConfigurationForm($form, $form_state);
-    $form['css_class']['#type'] = 'radios';
-    $form['css_class']['#after_build'] = [
+    $form[$plugin_id]['#type'] = 'radios';
+    $form[$plugin_id]['#after_build'] = [
       [$this, 'afterBuildRadios'],
     ];
     return $form;
@@ -44,6 +44,7 @@ class CSSClassRadios extends CssClass implements TrustedCallbackInterface {
    *   Returns the radios element with classes added.
    */
   public function afterBuildRadios(array $element, FormStateInterface $form_state) {
+    $plugin_id = $this->getPluginId();
     $classes = $this->getConfiguration('options') ?? [];
     array_walk($classes, function (&$option) {
       $option = explode(' ', $option['class'] ?? '');
@@ -63,7 +64,7 @@ class CSSClassRadios extends CssClass implements TrustedCallbackInterface {
           'style' => $this->getConfiguration('style'),
         ],
       ];
-      $element['css_class']['#prefix'] = \Drupal::service('renderer')->render($style);
+      $element[$plugin_id]['#prefix'] = \Drupal::service('renderer')->render($style);
     }
 
     $class_name = 'so--' . str_replace('_', '-', $this->getConfiguration('option_id'));
