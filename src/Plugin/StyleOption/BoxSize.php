@@ -54,6 +54,11 @@ class BoxSize extends CssClass {
     ],
   ];
 
+  /**
+   * Default value key for margin and padding.
+   *
+   * @var string
+   */
   protected $defaultValue = 'default';
 
   /**
@@ -66,7 +71,7 @@ class BoxSize extends CssClass {
     // Add a fieldset to group the column form elements together.
     $form['boxsize'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t('Box Size'),
+      '#title' => $this->getConfiguration('label') ?? $this->t('Box Sizing'),
       '#tree' => TRUE,
       '#description' => $this->getConfiguration('description'),
       '#attributes' => [
