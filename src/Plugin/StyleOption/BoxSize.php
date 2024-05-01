@@ -221,7 +221,7 @@ class BoxSize extends CssClass {
 
     foreach ($this->properties as $property => $property_info) {
       foreach ($this->directions as $direction => $direction_info) {
-        if (!empty($value[$property][$direction]) && $value[$property][$direction] !== 'default') {
+        if (!empty($value[$property][$direction]) && $value[$property][$direction] !== 'default' && !is_array($value[$property][$direction])) {
           $classes[] = $property_info['prefix'] . $direction_info['prefix'] . $value[$property][$direction];
         }
       }
