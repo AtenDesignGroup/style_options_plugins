@@ -147,7 +147,7 @@ class BoxSize extends CssClass {
         $element = [
           '#type' => 'textfield',
           '#title' => $this->t('@label', ['@label' => $direction_info['label']]),
-          '#default_value' => $this->getValue('boxsize')[$property][$direction] ?? $this->getDefaultValue(),
+          '#default_value' => $this->getValue('boxsize')[$property][$direction] ?? $this->getDefaultValue()[$property][$direction],
           '#title_display' => 'invisible',
           '#attributes' => [
             'class' => [
