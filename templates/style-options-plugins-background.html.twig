@@ -1,14 +1,30 @@
+{% if color or file_url or repeat or position or size or attachment or gradient %}
 <style>
-	.{{css_class}}{
-    background-color: {{ color }};
-		background-image: url({{ file_url }});
-		background-repeat: {{ repeat }};
-		background-position: {{ position }};
-		background-size: {{ size }};
-		-webkit-background-size: {{ size }};
-    background-attachment: {{ attachment }};
-		{% if gradient %}
-			background-image: {{ gradient }}
-		{% endif %}
-	}
+.{{css_class}} {
+{% if color %}
+	background-color: {{ color }};
+{% endif %}
+{% if file_url %}
+	background-image: url({{ file_url }});
+{% endif %}
+{% if repeat %}
+	background-repeat: {{ repeat }};
+{% endif %}
+{% if position %}
+	background-position: {{ position }};
+{% endif %}
+{% if size %}
+	background-size: {{ size }};
+{% endif %}
+{% if size %}
+	-webkit-background-size: {{ size }};
+{% endif %}
+{% if attachment %}
+	background-attachment: {{ attachment }};
+{% endif %}
+{% if gradient %}
+	background-image: {{ gradient }}
+{% endif %}
+}
 </style>
+{% endif %}

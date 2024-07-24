@@ -5,6 +5,7 @@ namespace Drupal\style_options_plugins\Plugin\StyleOption;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
 use Drupal\Core\Render\Renderer;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\style_options\StyleOptionStyleTrait;
@@ -250,6 +251,14 @@ class Background extends StyleOptionPluginBase {
     //   $this->values['bg_image']['media'] = $values['media']['media_selection_id'];
     // }
     return $this;
+  }
+
+  /**
+   * Returns a css class name to use for the option.
+   */
+  protected function getCssClassName() {
+    $hash = strtoupper(substr(md5(uniqid(mt_rand(), TRUE)), 0, 6));
+    return Html::getUniqueId('option-plugin-' . $this->pluginId . '-' . $hash);
   }
 
 }
