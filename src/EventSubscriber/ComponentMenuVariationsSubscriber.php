@@ -36,8 +36,8 @@ class ComponentMenuVariationsSubscriber implements EventSubscriberInterface {
    * @param \Drupal\layout_paragraphs\Event\LayoutParagraphsAllowedTypesEvent $event
    *   The allowed types event.
    */
-  public function typeRestrictions(LayoutParagraphsAllowedTypesEvent $event) {    
-    
+  public function typeRestrictions(LayoutParagraphsAllowedTypesEvent $event) {
+
     $types = $event->getTypes();
     foreach ($types as $bundle => $info) {
       if (!isset($info['url_object']) || !is_object($info['url_object'])) {
